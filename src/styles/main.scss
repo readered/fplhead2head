@@ -1,0 +1,38 @@
+@import 'custom';
+@import './../../node_modules/bootstrap/scss/bootstrap';
+
+/*
+
+#input-component-container {
+  height: 100vh
+}
+
+*/
+
+#code-input {
+  max-width: 350px
+}
+
+.main-title {
+  padding-top: 20vh
+}
+
+.main-subtitle {
+  padding-top: 5vh
+}
+
+.results-title {
+  padding-top: 20px
+}
+
+button[data-toggle="collapse"] {
+  width: 100%
+}
+
+#results-accordian {
+  width: 100%
+}
+
+.grey {
+  color: rgb(128, 128, 128)
+}
