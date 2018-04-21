@@ -41,7 +41,7 @@
 <script>
 import {mapGetters} from 'vuex';
 import PlayerListComponent from './PlayerListComponent.vue';
-//Test comment
+
 export default {
   props: ['fixture'],
   computed: {
