@@ -25,11 +25,22 @@
       <div class="card-body">
         <div class="container">
           <div class="row">
-            <div class="col-md-6">
-              <player-list-component :teamId="fixture.entry_1_entry" :isHome="true"></player-list-component>
+            <div class="col-md-12">
+              <player-list-component :homeTeamId="fixture.entry_1_entry" :awayTeamId="fixture.entry_2_entry"></player-list-component>
             </div>
-            <div class="col-md-6">
-              <player-list-component :teamId="fixture.entry_2_entry" :isHome="false"></player-list-component>
+          </div>
+          <div class="row">
+            <div :class="['col-md-4 playerName d-flex justify-content-start']">
+              Total
+            </div>
+            <div :class="['col-md-2 d-flex justify-content-center']">
+              {{homeTeamTotal}}
+            </div>
+            <div :class="['col-md-2 d-flex justify-content-center']">
+              {{awayTeamTotal}}
+            </div>
+            <div :class="['col-md-4 playerName d-flex justify-content-end']">
+              Total
             </div>
           </div>
         </div>

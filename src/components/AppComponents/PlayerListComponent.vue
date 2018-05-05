@@ -1,7 +1,8 @@
 <template lang="html">
   <div class="container">
     <div class="row">
-      <player-name-score-component v-for="player in playerList.picks" :player="player" :isHome="isHome"></player-name-score-component>
+      <player-name-score-component v-for="index in 15" :homePlayer="homeTeamPlayer(index)"
+          :awayPlayer="awayTeamPlayer(index)" :position="index"></player-name-score-component>
     </div>
   </div>
 
@@ -9,17 +10,19 @@
 </template>
 
 <script>
-import _ from 'lodash';
 import PlayerNameScoreComponent from './PlayerNameScoreComponent.vue';
 
 export default {
   props: [
-    'teamId',
-    'isHome'
+    'homeTeamId',
+    'awayTeamId'
   ],
-  computed: {
-    playerList(){
-      return this.$store.getters.getTeamPicks(this.teamId);
+  methods: {
+    homeTeamPlayer(position) {
+      return this.$store.getters.getTeamPicks(this.homeTeamId).picks[position - 1];
+    },
+    awayTeamPlayer(position) {
+      return this.$store.getters.getTeamPicks(this.awayTeamId).picks[position - 1];
     }
   },
   components: {

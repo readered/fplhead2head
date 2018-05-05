@@ -1,5 +1,6 @@
-@import 'custom';
+@import './custom';
 @import './../../node_modules/bootstrap/scss/bootstrap';
+@import './../../node_modules/font-awesome/scss/font-awesome';
 
 /*
 
@@ -35,4 +36,20 @@ button[data-toggle="collapse"] {
 
 .grey {
   color: rgb(128, 128, 128)
+}
+
+.search-button {
+  border-color: white;
+  color: white;
+}
+
+.playerNameRow {
+  border-bottom-color: lightgray;
+  border-bottom-width: 1px;
+  border-bottom-style: dashed;
+}
+
+.playerNameRow.solid {
+  border-bottom-width: 1.5px;
+  border-bottom-style: solid;
 }
