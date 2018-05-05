@@ -6,8 +6,14 @@
       </div>
       <div :class="['col-md-2 d-flex justify-content-center']">
         {{homePlayerLive.stats.total_points}}
+        <span v-if="isBPSVisible(homePlayer.element)" class="">
+          ({{predictedPlayerBPS(homePlayer.element)}})
+        </span>
       </div>
       <div :class="['col-md-2 d-flex justify-content-center']">
+        <span v-if="isBPSVisible(awayPlayer.element)" class="">
+          ({{predictedPlayerBPS(awayPlayer.element)}})
+        </span>
         {{awayPlayerLive.stats.total_points}}
       </div>
       <div :class="['col-md-4 playerName d-flex justify-content-end']">
@@ -44,6 +50,14 @@ export default {
     },
     awayPlayerName(){
       return this.awayPlayerElement.first_name + " " + this.awayPlayerElement.second_name
+    }
+  },
+  methods: {
+    isBPSVisible(playerId){
+      return this.$store.getters.isPlayerActive(playerId);
+    },
+    predictedPlayerBPS(playerId){
+      return this.$store.getters.getPredictedPlayerBPS(playerId);
     }
   }
 }

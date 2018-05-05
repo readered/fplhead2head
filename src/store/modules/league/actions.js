@@ -1,5 +1,22 @@
 import api from '../../api';
 
+addFormation: (context, picksResponse) => {
+  var formation = {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0
+  }
+
+  for (var i = 0; i < 11; i++) {
+    var position = context.getters.getPlayerElement(picksResponse.picks[i].element);
+    formation[position]++
+  }
+
+  picksReponse["formation"] = formation;
+  return;
+}
+
 const actions = {
   async getData(context, params){
     context.commit('startDataRetrieval');
@@ -55,6 +72,7 @@ const actions = {
         if(!context.state.picksCache[teamId]){
           try{
             var pickResponse = await api.get(`/api/picks/${teamId}/${context.getters.getCurrentGameWeek}`);
+            addFormation(context, pickResponse);
           }
           catch(error){
             context.commit('apiCallError', {error: error});
