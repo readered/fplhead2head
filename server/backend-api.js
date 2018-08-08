@@ -1,28 +1,19 @@
-const path = require('path'),
-  express = require('express'),
-  opn = require('opn'),
-  rp = require('request-promise-native'),
-  webpack = require('webpack'),
-  webpackDevMiddleware = require('webpack-dev-middleware');
+const express = require('express'),
+    rp = require('request-promise-native'),
+    fs = require('fs'),
+    path = require('path'),
+    moment = require('moment'),
+    DataStore = require('@google-cloud/datastore');
 
-var DIST_DIR = path.join(__dirname, 'build'),
-  port = 3000,
-  app = express(),
-  api = express.Router();
+var api = express.Router();
 
-const config = require('./webpack.config.js'),
-  compiler = webpack(config);
+const localSavePath = 'C:/temp/fpl',
+    devMode = true,
+    saveToDb = true,
+    datastore = new DataStore({
+      projectID: 'fplhead2head',
+    });
 
-app.use(express.static(DIST_DIR));
-app.use('/api', api);
-
-app.use(webpackDevMiddleware(compiler, {
-  publicPath: config.output.publicPath
-}));
-
-app.get('/', function(req, res) {
-  res.sendFile(path.join(DIST_DIR, "index.html"));
-});
 
 //Get requests for FPL getData
 
@@ -37,6 +28,7 @@ api.get('/league/:code', asyncMiddleware(async (req, res, next) => {
   console.log('League data requested');
   console.log(req.params);
   const data = await getLeagueData(req.params.code)
+  if(devMode) saveToFile('league_'+ req.params.code, data);
   res.json(data);
 }));
 
@@ -48,11 +40,13 @@ api.get('/team/:code', asyncMiddleware(async (req, res, next) => {
     h2hleagues: []
   }
   response.team = await getTeamData(req.params.code, res);
+  if(devMode) saveToFile('team_'+ req.params.code, response.team);
   var leagues = response.team.leagues.h2h.filter(league => !league.is_cup);
   console.log(leagues);
   for (var i = 0; i < leagues.length; i++) {
-    response.h2hleagues.push(await getLeagueData(leagues[i].id));
+    response.h2hleagues.push(await getLeagueData(leagues[i].id)); 
   }
+  if(devMode) saveToFile('leagues_'+ req.params.code, response.h2hleagues);
 
   res.json(response);
 }));
@@ -61,6 +55,7 @@ api.get('/picks/:code/:gameweek', asyncMiddleware(async (req, res, next) => {
   console.log('Picks data requested');
   console.log(req.params);
   const data = await getPicksData(req.params);
+  if(devMode) saveToFile('picks_' + req.params.code, data);
   res.json(data);
 }));
 
@@ -68,12 +63,14 @@ api.get('/live/:code', asyncMiddleware(async (req, res, next) => {
   console.log('Live data requested');
   console.log(req.params);
   const data = await getLiveData(req.params.code);
+  if(devMode) saveToFile('live', data);
   res.json(data);
 }));
 
 api.get('/elements', asyncMiddleware(async (req, res, next) =>{
   console.log('Elements data requested');
   const data = await getElementsData();
+  if(devMode) saveToFile('elements', data);
   res.json(data);
 }));
 
@@ -109,8 +106,35 @@ function getElementsData(){
   return coreFplApiRequest(url);
 }
 
+function saveToFile(type, data){
+  if(!data){
+    console.log(`data for type ${type} is null`);
+  }
+  if(!fs.existsSync(localSavePath)){
+    fs.mkdirSync(localSavePath);
+  }
+  const fileName = type + "_" + moment().format('YYYYMMDD_HH_mm_ss') + '.json';
+  fs.writeFile(path.join(localSavePath, fileName), JSON.stringify(data), err => {
+    if(err){
+        console.log(err);
+    }
+  });
+
+  if(!(saveToDb && data)) return;
+  var key = datastore.key(type);
+  const entity = {
+    key: key,
+    data: data
+  };
+  datastore.save(entity)
+    .then(() => {
+      console.log(`Saved entity of kind: ${entity.key.kind}`);
+    })
+    .catch(err => {
+      console.log('Error saving to datastore: ' + JSON.stringify(err));
+    })
+}
+
 //
 
-app.listen(port, () => console.log('Server listening on port ' + port));
-
-opn('http://localhost:'+port);
+module.exports = api;

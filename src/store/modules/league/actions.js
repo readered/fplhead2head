@@ -1,6 +1,6 @@
 import api from '../../api';
 
-addFormation: (context, picksResponse) => {
+function addFormation (context, picksResponse) {
   var formation = {
     "1": 0,
     "2": 0,
@@ -28,7 +28,6 @@ const actions = {
     }
     catch(error){
       context.commit('apiCallError', {error: 'FPL data not available at the moment'});
-      return;
     }
 
     try{
@@ -36,8 +35,7 @@ const actions = {
       console.log(mainResponse);
     }
     catch(error){
-      context.commit('apiCallError', {error: `Unknown code type: ${error}`});
-      return;
+      context.commit('apiCallError', {error: `Unknown code type: ${JSON.stringify(error)}`});
     }
 
     switch(params.codeType){
@@ -62,9 +60,13 @@ const actions = {
     }
     catch(error){
       context.commit('apiCallError', {error: error});
-      return;
     }
-    context.commit('updateLiveData', liveResponse);
+    try{
+      context.commit('updateLiveData', liveResponse);
+    }
+    catch(error){
+      context.commit('apiCallError', {error: error});
+    }    
 
     for (var i = 0; i < context.state.leagues.data.length; i++) {
       for (var j = 0; j < context.state.leagues.data[i].standings.results.length; j++) {

@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="container">
     <div :class="{'row playerNameRow': true, 'solid': (position === 11 || position === 15)}">
-      <div :class="['col-md-4 playerName d-flex justify-content-start']">
+      <div :class="{'col-md-4 playerName d-flex justify-content-start': true, 'up': homePlayerUp, 'down': homePlayerDown}">
         {{homePlayerName}}
       </div>
       <div :class="['col-md-2 d-flex justify-content-center']">
@@ -16,7 +16,7 @@
         </span>
         {{awayPlayerLive.stats.total_points}}
       </div>
-      <div :class="['col-md-4 playerName d-flex justify-content-end']">
+      <div :class="{'col-md-4 playerName d-flex justify-content-end': true, 'up': awayPlayerUp, 'down': awayPlayerDown}">
         {{awayPlayerName}}
       </div>
     </div>
@@ -27,6 +27,14 @@
 
 
 export default {
+  data: function(){
+    return {
+      homePlayerUp: false,
+      homePlayerDown: false,
+      awayPlayerUp: false,
+      awayPlayerDown: false
+    }
+  },
   props: [
     'homePlayer',
     'awayPlayer',
@@ -58,7 +66,32 @@ export default {
     },
     predictedPlayerBPS(playerId){
       return this.$store.getters.getPredictedPlayerBPS(playerId);
+    },
+    formatPointChange(change, upBool, downBool){
+      if(change === 0) return;
+      if(change > 0){
+        upBool = true;
+        setTimeout(() => {
+          upBool = false;
+        }, 2000)
+      }
+      else {
+        downBool = true;
+        setTimeout(() => {
+          downBool = false;
+        }, 2000)
+      }
+    }
+  },
+  watch: {
+    'homePlayerLive.stats.total_points': function(newVal, oldVal){
+      this.formatPointChange(newVal - oldVal, this.homePlayerUp, this.homePlayerDown);
+    },
+    'awayPlayerLive.stats.total_points': function(newVal, oldVal){
+      this.formatPointChange(newVal - oldVal, this.awayPlayerUp, this.awayPlayerDown);
     }
   }
 }
 </script>
+
+
