@@ -8,7 +8,7 @@ const express = require('express'),
 var api = express.Router();
 
 const localSavePath = 'C:/temp/fpl',
-    devMode = process.env.NODE_ENV !== 'production',
+    devMode = false,
     saveToDb = true,
     datastore = new DataStore({
       projectID: 'fplhead2head',
