@@ -3,7 +3,7 @@ const path = require('path'),
   api = require('./server/backend-api.js');
 
 var DIST_DIR = path.join(__dirname, 'build'),
-  port = 3000,
+  port = process.env.PORT || 3000,
   app = express();
 
 app.use(express.static(DIST_DIR));
